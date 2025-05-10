@@ -91,48 +91,64 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#6C3EB7",
     padding: 20,
-    borderRadius: 10,
+    borderRadius: 16,
     margin: 10,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
   },
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
+    marginVertical: 8,
   },
   label: {
-    color: "white",
+    color: "#E0E0E0",
     fontSize: 14,
+    fontWeight: "600",
+    letterSpacing: 0.5,
   },
   expense: {
-    color: "orange",
-    fontSize: 18,
+    color: "#FFA726", // warmer orange
+    fontSize: 20,
     fontWeight: "bold",
   },
   income: {
-    color: "white",
-    fontSize: 18,
+    color: "#B2FF59", // bright green
+    fontSize: 20,
     fontWeight: "bold",
   },
   right: {
     alignItems: "flex-end",
   },
   leftToSpend: {
-    color: "white",
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "500",
   },
   budgetAmount: {
-    color: "white",
+    color: "#CCCCCC",
+    fontSize: 16,
+    fontWeight: "500",
   },
   leftAmount: {
-    color: "white",
-    fontSize: 16,
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "700",
   },
   totalBudget: {
-    color: "white",
-    fontSize: 16,
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "700",
   },
   progressBar: {
-    marginTop: 10,
-    height: 6,
+    marginTop: 20,
+    height: 10,
     borderRadius: 5,
+    backgroundColor: "#D1C4E9", // lighter background to contrast orange bar
   },
 });
 

@@ -5,7 +5,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { useRouter } from 'expo-router';
 import { makeRedirectUri } from 'expo-auth-session';
 import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { auth } from '../firebase';
+import { auth } from '../firebase'; // Assuming you have a firebase.js file
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -43,13 +43,20 @@ export default function LoginScreen() {
     }
   }, [response]);
 
+  // Note: To use react-native-linear-gradient, you'll need to install it:
+  // expo install expo-linear-gradient
+  // Then uncomment the import and the LinearGradient component.
+  // import { LinearGradient } from 'expo-linear-gradient';
+
   return (
     <View style={styles.container}>
-      {/* <Image
-        source={require('../assets/login-illustration.png')}
-        style={styles.image}
-        resizeMode="contain"
-      /> */}
+      {/* Uncomment the following if you want to use the illustration */}
+      {/*
+        <Image
+          source={require('../assets/login-illustration.png')}
+          style={styles.image}
+          resizeMode="contain"
+        /> */}
       <Text style={styles.title}>Welcome to Money Manager</Text>
       <Text style={styles.subtitle}>Please sign in to continue</Text>
 
@@ -75,29 +82,29 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#121212', // Dark background
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
   },
   image: {
-    width: 250,
-    height: 250,
+    width: '80%', // Adjust width for responsiveness
+    aspectRatio: 1,
     marginBottom: 20,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#E0E0E0', // Light grey for title
   },
   subtitle: {
     fontSize: 16,
-    color: '#777',
+    color: '#B0B0B0', // Slightly darker grey for subtitle
     marginBottom: 30,
   },
   button: {
     flexDirection: 'row',
-    backgroundColor: '#4285F4',
+    backgroundColor: '#6200EE', // Purple accent color
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 8,
@@ -110,7 +117,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   buttonText: {
-    color: '#fff',
+    color: '#FFFFFF', // White text for button
     fontSize: 16,
     fontWeight: '600',
   },

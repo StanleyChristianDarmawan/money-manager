@@ -53,25 +53,33 @@ const TransactionTimeline = () => {
             </View>
 
             {item.items.map((tx: any, index: number) => (
-              <View key={index} style={styles.transactionRow}>
-                <View style={styles.timeline}>
-                  <Ionicons name="ellipse" size={8} color="white" />
-                  <View style={styles.line} />
-                </View>
+                <View key={index} style={styles.transactionRow}>
+                  <View style={styles.timeline}>
+                    <Ionicons name="ellipse" size={8} color="#FFFFFF" />
+                    <View style={styles.line} />
+                  </View>
 
-                <View style={[styles.transactionCard, { backgroundColor: tx.backgroundColor }]}>
-                  <Text style={styles.categoryText}>{tx.category}</Text>
-                  <Text
+                  <View
                     style={[
-                      styles.amountText,
-                      tx.amount > 0 ? styles.income : styles.expense,
+                      styles.transactionCard,
+                      { backgroundColor: tx.backgroundColor || "#FFF" },
                     ]}
                   >
-                    {tx.amount > 0 ? `+${tx.amount.toLocaleString()}` : `${tx.amount.toLocaleString()}`}
-                  </Text>
+                    <Text style={styles.categoryText}>{tx.category}</Text>
+                    <Text
+                      style={[
+                        styles.amountText,
+                        tx.amount > 0 ? styles.income : styles.expense,
+                      ]}
+                    >
+                      {tx.amount > 0
+                        ? `+${tx.amount.toLocaleString()}`
+                        : tx.amount.toLocaleString()}
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            ))}
+              ))}
+
           </View>
         )}
       />
@@ -81,67 +89,78 @@ const TransactionTimeline = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#5B2C82",
-    padding: 10,
-    borderRadius: 10,
+    backgroundColor: "#6C3EB7",
+    padding: 16,
+    borderRadius: 16,
     marginTop: 10,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 3,
   },
   dateHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
-    paddingVertical: 5,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#7E57C2",
+    marginBottom: 6,
   },
   dateText: {
-    color: "white",
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "700",
   },
   dayText: {
-    color: "#C4C4C4",
+    color: "#D1C4E9",
     fontSize: 14,
+    fontStyle: "italic",
   },
   transactionRow: {
     flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 5,
+    alignItems: "flex-start",
+    marginBottom: 14,
   },
   timeline: {
     alignItems: "center",
-    marginRight: 10,
+    marginRight: 12,
   },
   line: {
     width: 2,
-    height: 30,
-    backgroundColor: "white",
-    marginVertical: 2,
+    height: 36,
+    backgroundColor: "#FFFFFF80", // white with opacity
+    marginTop: 4,
   },
   transactionCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    padding: 10,
-    borderRadius: 10,
     flex: 1,
-  },
-  icon: {
-    width: 24,
-    height: 24,
-    marginRight: 10,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    padding: 14,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
   },
   categoryText: {
     color: "#333",
-    flex: 1,
-    fontSize: 14,
+    fontSize: 15,
+    fontWeight: "600",
   },
   amountText: {
-    fontSize: 14,
-    fontWeight: "bold",
+    fontSize: 15,
+    fontWeight: "700",
   },
   income: {
-    color: "green",
+    color: "#4CAF50", // green
   },
   expense: {
-    color: "red",
+    color: "#E53935", // red
   },
 });
+
 
 export default TransactionTimeline;
