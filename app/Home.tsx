@@ -1,12 +1,14 @@
 import React from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-// import LinearGradient from "react-native-linear-gradient"; // Uncomment if using gradient
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import BudgetSummary from "./BudgetSummary";
 import TransactionTimeline from "./Timeline";
 
 const HomeScreen = () => {
+  const router = useRouter();
+
   return (
-    // <LinearGradient colors={['#5B2C82', '#4A148C']} style={styles.container}> // Optional gradient
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.header}>Welcome Back 👋</Text>
 
@@ -17,8 +19,15 @@ const HomeScreen = () => {
       <View style={styles.section}>
         <TransactionTimeline />
       </View>
+
+      {/* Button to go to Insights */}
+      <TouchableOpacity style={styles.button} onPress={() => router.push("/Insight")}>
+        <View style={styles.buttonContent}>
+          <Ionicons name="analytics-outline" size={20} color="#6C3EB7" style={{ marginRight: 10 }} />
+          <Text style={styles.buttonText}>View Insights</Text>
+        </View>
+      </TouchableOpacity>
     </ScrollView>
-    // </LinearGradient>
   );
 };
 
@@ -27,7 +36,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 16,
     backgroundColor: "#5B2C82",
-    paddingBottom: 40,
+    paddingBottom: 60,
   },
   header: {
     fontSize: 22,
@@ -37,6 +46,25 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 20,
+  },
+  button: {
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    elevation: 4,
+    marginTop: 10,
+  },
+  buttonContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  buttonText: {
+    fontSize: 16,
+    color: "#6C3EB7",
+    fontWeight: "600",
   },
 });
 

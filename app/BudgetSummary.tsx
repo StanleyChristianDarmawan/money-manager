@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ProgressBar } from "react-native-paper";
-import { getFirestore, collection, getDocs, query, where } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../firebase"; // Make sure this path is correct
 
 const BudgetSummary = () => {
   const [income, setIncome] = useState(0);
@@ -11,53 +11,53 @@ const BudgetSummary = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const auth = getAuth();
-      const user = auth.currentUser;
-      if (user) {
-        const db = getFirestore();
-
-        const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
-        const monthEnd = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
-
-        const incomeRef = collection(db, "users", user.uid, "income");
-        const expenseRef = collection(db, "users", user.uid, "expenses");
-
-        const qIncome = query(incomeRef, where("date", ">=", monthStart.toISOString().split("T")[0]));
-        const qExpense = query(expenseRef, where("date", ">=", monthStart.toISOString().split("T")[0]));
-
-        const incomeSnap = await getDocs(qIncome);
-        const expenseSnap = await getDocs(qExpense);
-
+    const fetchTransactions = async () => {
+      try {
+        // Get all transactions from the same collection as TransactionTimeline
+        const querySnapshot = await getDocs(collection(db, "transactions"));
+        
         let totalIncome = 0;
-        incomeSnap.forEach((doc) => {
-          totalIncome += doc.data().amount;
-        });
-
         let totalExpense = 0;
-        expenseSnap.forEach((doc) => {
-          totalExpense += doc.data().amount;
+        
+        // Get current month for filtering
+        const today = new Date();
+        const currentMonth = today.getMonth() + 1; // JavaScript months are 0-indexed
+        const currentYear = today.getFullYear();
+        
+        querySnapshot.forEach((doc) => {
+          const transaction = { id: doc.id, ...doc.data() };
+          
+          // Parse date to check if it's in the current month
+          const txDate = new Date(transaction.date);
+          const txMonth = txDate.getMonth() + 1;
+          const txYear = txDate.getFullYear();
+          
+          // Only process transactions from the current month
+          if (txMonth === currentMonth && txYear === currentYear) {
+            if (transaction.amount < 0) {
+              // It's an expense - store as positive for display
+              totalExpense += Math.abs(transaction.amount);
+            } else {
+              // It's income
+              totalIncome += transaction.amount;
+            }
+          }
         });
-
+        
         setIncome(totalIncome);
         setExpense(totalExpense);
         setLoading(false);
+      } catch (error) {
+        console.error("Error fetching transactions:", error);
+        setLoading(false);
       }
     };
-
-    fetchData();
+    
+    fetchTransactions();
   }, []);
 
   const leftToSpend = budget - expense;
   const progress = budget > 0 ? expense / budget : 0;
-
-  // if (loading) {
-  //   return (
-  //     <View style={styles.container}>
-  //       <Text style={{ color: "white" }}>Loading...</Text>
-  //     </View>
-  //   );
-  // }
 
   return (
     <View style={styles.container}>
@@ -68,7 +68,7 @@ const BudgetSummary = () => {
         </View>
         <View style={styles.right}>
           <Text style={styles.label}>This Month Income</Text>
-          <Text style={styles.income}>{income.toLocaleString()}</Text>
+          <Text style={styles.income}>{income.toLocaleString()} ▲</Text>
         </View>
       </View>
 
@@ -78,11 +78,26 @@ const BudgetSummary = () => {
         <Text style={styles.budgetAmount}>Monthly Budget</Text>
       </View>
       <View style={styles.row}>
-        <Text style={styles.leftAmount}>{leftToSpend.toLocaleString()}</Text>
+        <Text style={[
+          styles.leftAmount,
+          leftToSpend < 0 ? styles.negativeAmount : null
+        ]}>
+          {leftToSpend.toLocaleString()}
+        </Text>
         <Text style={styles.totalBudget}>{budget.toLocaleString()}</Text>
       </View>
 
-      <ProgressBar progress={progress} color="orange" style={styles.progressBar} />
+      <ProgressBar 
+        progress={progress > 1 ? 1 : progress} 
+        color={progress > 0.9 ? "#FF5252" : "orange"} 
+        style={styles.progressBar} 
+      />
+      
+      {progress > 1 && (
+        <Text style={styles.overBudget}>
+          You've exceeded your monthly budget by {(expense - budget).toLocaleString()}
+        </Text>
+      )}
     </View>
   );
 };
@@ -139,6 +154,9 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "700",
   },
+  negativeAmount: {
+    color: "#FF5252", // red for negative amount
+  },
   totalBudget: {
     color: "#FFFFFF",
     fontSize: 20,
@@ -149,6 +167,13 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 5,
     backgroundColor: "#D1C4E9", // lighter background to contrast orange bar
+  },
+  overBudget: {
+    color: "#FF5252",
+    fontSize: 14,
+    fontWeight: "600",
+    marginTop: 8,
+    textAlign: "right",
   },
 });
 
