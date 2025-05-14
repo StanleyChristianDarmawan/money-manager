@@ -1,13 +1,16 @@
 import React, { useEffect } from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Dimensions, StatusBar } from 'react-native';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { useRouter } from 'expo-router';
 import { makeRedirectUri } from 'expo-auth-session';
-import { getAuth, GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../firebase'; // Assuming you have a firebase.js file
+import { Ionicons } from "@expo/vector-icons";
 
 WebBrowser.maybeCompleteAuthSession();
+
+const { width } = Dimensions.get('window');
 
 export default function LoginScreen() {
   const [request, response, promptAsync] = Google.useAuthRequest({
@@ -17,8 +20,6 @@ export default function LoginScreen() {
 
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
-
-  
 
   useEffect(() => {
     if (response?.type === 'success') {
@@ -33,8 +34,7 @@ export default function LoginScreen() {
 
         signInWithCredential(auth, credential)
           .then((userCredential) => {
-            const user = userCredential.user;
-            console.log("User signed in:", user);
+            console.log("User signed in:", userCredential.user);
             router.push('/Home');
           })
           .catch((error) => {
@@ -45,38 +45,71 @@ export default function LoginScreen() {
     }
   }, [response]);
 
-  // Note: To use react-native-linear-gradient, you'll need to install it:
-  // expo install expo-linear-gradient
-  // Then uncomment the import and the LinearGradient component.
-  // import { LinearGradient } from 'expo-linear-gradient';
-
   return (
     <View style={styles.container}>
-      {/* Uncomment the following if you want to use the illustration */}
-      {/*
-        <Image
-          source={require('../assets/login-illustration.png')}
-          style={styles.image}
-          resizeMode="contain"
-        /> */}
-      <Text style={styles.title}>Welcome to Money Manager</Text>
-      <Text style={styles.subtitle}>Please sign in to continue</Text>
+      <StatusBar translucent backgroundColor="transparent" />
+      
+      <View style={styles.content}>
+        <View style={styles.logoContainer}>
+          <View style={styles.logoCircle}>
+            <Ionicons name="wallet-outline" size={48} color="#FFFFFF" />
+          </View>
+        </View>
+        
+        <Text style={styles.title}>Money Manager</Text>
+        <Text style={styles.subtitle}>Take control of your finances</Text>
+        
+        <View style={styles.featureRow}>
+          <View style={styles.featureItem}>
+            <View style={styles.featureIconContainer}>
+              <Ionicons name="trending-up" size={22} color="#6C3EB7" />
+            </View>
+            <Text style={styles.featureText}>Track Expenses</Text>
+          </View>
+          
+          <View style={styles.featureItem}>
+            <View style={styles.featureIconContainer}>
+              <Ionicons name="pie-chart" size={22} color="#6C3EB7" />
+            </View>
+            <Text style={styles.featureText}>Budget Planning</Text>
+          </View>
+          
+          <View style={styles.featureItem}>
+            <View style={styles.featureIconContainer}>
+              <Ionicons name="notifications" size={22} color="#6C3EB7" />
+            </View>
+            <Text style={styles.featureText}>Alerts</Text>
+          </View>
+        </View>
 
-      {loading ? (
-        <ActivityIndicator size="large" color="#4285F4" style={{ marginTop: 20 }} />
-      ) : (
-        <TouchableOpacity
-          style={[styles.button, !request && { opacity: 0.5 }]}
-          onPress={() => promptAsync()}
-          disabled={!request}
-        >
-          <Image
-            source={{ uri: 'https://cdn.freebiesupply.com/logos/thumbs/2x/google-g-2015-logo.png' }}
-            style={styles.googleIcon}
-          />
-          <Text style={styles.buttonText}>Sign in with Google</Text>
-        </TouchableOpacity>
-      )}
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#8A52E5" style={styles.loader} />
+            <Text style={styles.loadingText}>Signing you in...</Text>
+          </View>
+        ) : (
+          <TouchableOpacity
+            style={[styles.button, !request && { opacity: 0.5 }]}
+            onPress={() => promptAsync()}
+            disabled={!request}
+          >
+            <View style={styles.buttonContent}>
+              <View style={styles.googleIconContainer}>
+                <Ionicons name="logo-google" size={18} color="#6C3EB7" />
+              </View>
+              <Text style={styles.buttonText}>Sign in with Google</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        
+        <Text style={styles.privacyText}>
+          By signing in, you agree to our Terms of Service
+        </Text>
+      </View>
+      
+      {/* Background decoration */}
+      <View style={styles.bgDecorTop} />
+      <View style={styles.bgDecorBottom} />
     </View>
   );
 }
@@ -84,43 +117,136 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#121212', // Dark background
+    backgroundColor: '#1A1128',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: StatusBar.currentHeight || 0,
+    overflow: 'hidden',
+  },
+  content: {
+    width: '90%',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
+    zIndex: 10,
   },
-  image: {
-    width: '80%', // Adjust width for responsiveness
-    aspectRatio: 1,
-    marginBottom: 20,
+  bgDecorTop: {
+    position: 'absolute',
+    width: width * 0.7,
+    height: width * 0.7,
+    borderRadius: width * 0.35,
+    backgroundColor: 'rgba(108, 62, 183, 0.08)',
+    top: -width * 0.25,
+    right: -width * 0.25,
+    zIndex: 1,
+  },
+  bgDecorBottom: {
+    position: 'absolute',
+    width: width * 0.5,
+    height: width * 0.5,
+    borderRadius: width * 0.25,
+    backgroundColor: 'rgba(108, 62, 183, 0.05)',
+    bottom: -width * 0.2,
+    left: -width * 0.2,
+    zIndex: 1,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  logoCircle: {
+    width: 90,
+    height: 90,
+    borderRadius: 45,
+    backgroundColor: '#6C3EB7',
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 8,
   },
   title: {
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: 'bold',
-    color: '#E0E0E0', // Light grey for title
+    color: '#FFFFFF',
+    marginBottom: 6,
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#B0B0B0', // Slightly darker grey for subtitle
-    marginBottom: 30,
+    color: '#D1C4E9',
+    marginBottom: 36,
+    textAlign: 'center',
+  },
+  featureRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+    marginBottom: 36,
+  },
+  featureItem: {
+    alignItems: 'center',
+    width: '33%',
+  },
+  featureIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 10,
+    elevation: 3,
+  },
+  featureText: {
+    fontSize: 12,
+    color: '#D1C4E9',
+    textAlign: 'center',
+  },
+  loadingContainer: {
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  loader: {
+    marginBottom: 10,
+  },
+  loadingText: {
+    color: '#D1C4E9',
+    fontSize: 16,
   },
   button: {
-    flexDirection: 'row',
-    backgroundColor: '#6200EE', // Purple accent color
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 8,
-    alignItems: 'center',
-    elevation: 2,
+    width: '100%',
+    height: 52,
+    borderRadius: 10,
+    marginTop: 16,
+    backgroundColor: '#6C3EB7',
+    elevation: 4,
+    overflow: 'hidden',
   },
-  googleIcon: {
+  buttonContent: {
+    flexDirection: 'row',
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  googleIconContainer: {
     width: 24,
     height: 24,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
     marginRight: 10,
   },
   buttonText: {
-    color: '#FFFFFF', // White text for button
-    fontSize: 16,
+    color: '#FFFFFF',
+    fontSize: 17,
     fontWeight: '600',
   },
+  privacyText: {
+    fontSize: 12,
+    color: '#9E9E9E',
+    textAlign: 'center',
+    marginTop: 20,
+  }
 });
