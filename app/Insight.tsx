@@ -1,3 +1,6 @@
+//ignore the red text since most of them are relevant for this code to work
+
+
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { PieChart } from "react-native-chart-kit";

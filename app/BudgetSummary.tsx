@@ -1,3 +1,8 @@
+//ignore the red text since most of them are relevant for this code to work
+
+
+
+
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ProgressBar } from "react-native-paper";

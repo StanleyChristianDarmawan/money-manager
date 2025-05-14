@@ -1,3 +1,5 @@
+//ignore the red text since most of them are relevant for this code to work
+
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
