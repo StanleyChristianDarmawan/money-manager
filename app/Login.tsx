@@ -18,6 +18,8 @@ export default function LoginScreen() {
   const router = useRouter();
   const [loading, setLoading] = React.useState(false);
 
+  
+
   useEffect(() => {
     if (response?.type === 'success') {
       const { authentication } = response;
