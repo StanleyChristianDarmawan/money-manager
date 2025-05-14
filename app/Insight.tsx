@@ -1,10 +1,7 @@
-//ignore the red text since most of them are relevant for this code to work
-
-
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { PieChart } from "react-native-chart-kit";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import { PieChart, LineChart, BarChart } from "react-native-chart-kit";
+import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase"; // Make sure this path is correct
 import { Dimensions } from "react-native";
 
@@ -19,34 +16,26 @@ const Insight = () => {
   useEffect(() => {
     const fetchTransactions = async () => {
       try {
-        // Get all transactions from the same collection as TransactionTimeline
         const querySnapshot = await getDocs(collection(db, "transactions"));
         
         const categoryTotals = {};
         let expenseSum = 0;
         let incomeSum = 0;
         
-        // Get current month for filtering
         const today = new Date();
-        const currentMonth = today.getMonth() + 1; // JavaScript months are 0-indexed
+        const currentMonth = today.getMonth() + 1;
         const currentYear = today.getFullYear();
         
         querySnapshot.forEach((doc) => {
           const transaction = { id: doc.id, ...doc.data() };
-          
-          // Parse date to check if it's in the current month
           const txDate = new Date(transaction.date);
           const txMonth = txDate.getMonth() + 1;
           const txYear = txDate.getFullYear();
           
-          // Only process transactions from the current month
           if (txMonth === currentMonth && txYear === currentYear) {
             if (transaction.amount < 0) {
-              // It's an expense
               const amount = Math.abs(transaction.amount);
               expenseSum += amount;
-              
-              // Group by category
               const category = transaction.category;
               if (categoryTotals[category]) {
                 categoryTotals[category] += amount;
@@ -54,7 +43,6 @@ const Insight = () => {
                 categoryTotals[category] = amount;
               }
             } else {
-              // It's income
               incomeSum += transaction.amount;
             }
           }
@@ -63,7 +51,6 @@ const Insight = () => {
         setTotalExpense(expenseSum);
         setTotalIncome(incomeSum);
         
-        // Format category data for the pie chart
         const data = Object.keys(categoryTotals).map((category, index) => {
           const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
           return {
@@ -89,6 +76,26 @@ const Insight = () => {
     fetchTransactions();
   }, []);
   
+  const lineChartData = {
+    labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+    datasets: [
+      {
+        data: [500, 300, 600, 700, 900, 1200, 1500],
+        color: (opacity = 1) => `rgba(255, 99, 132, ${opacity})`,
+        strokeWidth: 2,
+      },
+    ],
+  };
+
+  const barChartData = {
+    labels: ["Food", "Transport", "Entertainment", "Bills", "Others"],
+    datasets: [
+      {
+        data: [450, 300, 120, 220, 180],
+      },
+    ],
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
       <Text style={styles.title}>Spending Insights</Text>
@@ -111,26 +118,48 @@ const Insight = () => {
         </Text>
       )}
       
-      {categoryData.length > 0 ? (
-        <View style={styles.chartContainer}>
-          <Text style={styles.chartTitle}>Expense Breakdown</Text>
-          <PieChart
-            data={categoryData}
-            width={screenWidth - 32}
-            height={220}
-            accessor="amount"
-            backgroundColor="transparent"
-            paddingLeft="15"
-            chartConfig={{
-              color: () => `white`,
-              labelColor: () => `white`,
-            }}
-            style={{ alignSelf: "center" }}
-          />
-        </View>
-      ) : (
-        <Text style={styles.noData}>No expense data available for this month.</Text>
-      )}
+      <View style={styles.chartContainer}>
+        <Text style={styles.chartTitle}>Expense Breakdown</Text>
+        <PieChart
+          data={categoryData}
+          width={screenWidth - 32}
+          height={220}
+          accessor="amount"
+          backgroundColor="transparent"
+          paddingLeft="15"
+          chartConfig={{
+            color: () => `white`,
+            labelColor: () => `white`,
+          }}
+          style={{ alignSelf: "center" }}
+        />
+      </View>
+
+      <View style={styles.chartContainer}>
+        <Text style={styles.chartTitle}>Weekly Spending</Text>
+        <LineChart
+          data={lineChartData}
+          width={screenWidth - 32}
+          height={220}
+          chartConfig={{
+            backgroundColor: "#1E2923",
+            backgroundGradientFrom: "#08130D",
+            backgroundGradientTo: "#1E2923",
+            decimalPlaces: 2,
+            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            style: {
+              borderRadius: 16,
+            },
+            propsForDots: {
+              r: "6",
+              strokeWidth: "2",
+              stroke: "#ffa726",
+            },
+          }}
+          bezier
+        />
+      </View>
     </ScrollView>
   );
 };
