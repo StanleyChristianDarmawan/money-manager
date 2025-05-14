@@ -27,6 +27,22 @@ const HomeScreen = () => {
           <Text style={styles.buttonText}>View Insights</Text>
         </View>
       </TouchableOpacity>
+
+      {/* Button to go to Add Income Page */}
+      <TouchableOpacity style={styles.addButton} onPress={() => router.push("/add-income")}>
+        <View style={styles.buttonContent}>
+          <Ionicons name="cash-outline" size={20} color="#4CAF50" style={{ marginRight: 10 }} />
+          <Text style={styles.buttonText}>Add Income</Text>
+        </View>
+      </TouchableOpacity>
+
+      {/* Button to go to Add Expense Page */}
+      <TouchableOpacity style={styles.addButton} onPress={() => router.push("/add-expense")}>
+        <View style={styles.buttonContent}>
+          <Ionicons name="wallet-outline" size={20} color="#F44336" style={{ marginRight: 10 }} />
+          <Text style={styles.buttonText}>Add Expense</Text>
+        </View>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -65,6 +81,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#6C3EB7",
     fontWeight: "600",
+  },
+  addButton: {
+    backgroundColor: "#FFFFFF",
+    paddingVertical: 14,
+    borderRadius: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    elevation: 4,
+    marginTop: 10,
   },
 });
 

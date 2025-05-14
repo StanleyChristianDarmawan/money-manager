@@ -1,12 +1,8 @@
-//ignore the red text since most of them are relevant for this code to work
-
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, Dimensions } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
-
-const { width } = Dimensions.get("window");
 
 const categoryIcons: { [key: string]: string } = {
   Salary: "cash-outline",
@@ -53,89 +49,72 @@ const TransactionTimeline = () => {
 
   const getBackgroundColor = (amount: number) => {
     if (amount > 0) return "#E8F5E9";
-    if (amount < 0 && amount > -30000) return "#FFEBEE";
-    return "#FF8A80";
+    if (amount < 0 && amount > -30000) return "#FFF3E0";
+    return "#FFEBEE";
   };
 
   return (
-    <View style={styles.outerContainer}>
-      <View style={styles.container}>
-        <FlatList
-          data={transactions}
-          keyExtractor={(item) => item.date}
-          renderItem={({ item }) => (
-            <View>
-              <View style={styles.dateHeader}>
-                <Text style={styles.dateText}>{item.date}</Text>
-                <Text style={styles.dayText}>{item.day}</Text>
-              </View>
+    <View style={styles.container}>
+      <FlatList
+        data={transactions}
+        keyExtractor={(item) => item.date}
+        renderItem={({ item }) => (
+          <View>
+            <View style={styles.dateHeader}>
+              <Text style={styles.dateText}>{item.date}</Text>
+              <Text style={styles.dayText}>{item.day}</Text>
+            </View>
 
-              {item.items.map((tx: any, index: number) => (
-                <View key={index} style={styles.transactionRow}>
-                  <View style={styles.timeline}>
-                    <Ionicons name="ellipse" size={8} color="#FFFFFF" />
-                    <View style={styles.line} />
+            {item.items.map((tx: any, index: number) => (
+              <View key={index} style={styles.transactionRow}>
+                <View style={styles.timeline}>
+                  <Ionicons name="ellipse" size={8} color="#FFFFFF" />
+                  <View style={styles.line} />
+                </View>
+
+                <View
+                  style={[
+                    styles.transactionCard,
+                    { backgroundColor: getBackgroundColor(tx.amount) },
+                  ]}
+                >
+                  <View style={styles.cardLeft}>
+                    <Ionicons
+                      name={categoryIcons[tx.category] || categoryIcons.Default}
+                      size={20}
+                      color="#555"
+                      style={{ marginRight: 10 }}
+                    />
+                    <Text style={styles.categoryText}>{tx.category}</Text>
                   </View>
 
-                  <View
+                  <Text
                     style={[
-                      styles.transactionCard,
-                      { backgroundColor: getBackgroundColor(tx.amount) },
+                      styles.amountText,
+                      tx.amount > 0 ? styles.income : styles.expense,
                     ]}
                   >
-                    <View style={styles.cardLeft}>
-                      <View style={styles.iconContainer}>
-                        <Ionicons
-                          name={categoryIcons[tx.category] || categoryIcons.Default}
-                          size={20}
-                          color="#555"
-                        />
-                      </View>
-                      <Text style={styles.categoryText}>{tx.category}</Text>
-                    </View>
-
-                    <Text
-                      style={[
-                        styles.amountText,
-                        tx.amount > 0 ? styles.income : styles.expense,
-                      ]}
-                    >
-                      {tx.amount > 0
-                        ? `+${tx.amount.toLocaleString()}`
-                        : tx.amount.toLocaleString()}
-                    </Text>
-                  </View>
+                    {tx.amount > 0
+                      ? `+${tx.amount.toLocaleString()}`
+                      : tx.amount.toLocaleString()}
+                  </Text>
                 </View>
-              ))}
-            </View>
-          )}
-        />
-      </View>
+              </View>
+            ))}
+          </View>
+        )}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    alignItems: "center",
-    width: "100%",
-    paddingHorizontal: 10,
-    marginTop: 10,
-    marginBottom: 20,
-  },
   container: {
-    width: width * 0.85, // Reduces width to 85% of screen width
     backgroundColor: "#6C3EB7",
     padding: 16,
-    borderRadius: 20,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 10,
+    borderRadius: 16,
+    marginTop: 10,
+    marginBottom: 20,
   },
   dateHeader: {
     flexDirection: "row",
@@ -178,18 +157,8 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     shadowColor: "#000",
     shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowRadius: 4,
     shadowOffset: { width: 0, height: 2 },
-    elevation: 2,
-  },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
-    borderRadius: 18,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 10,
   },
   cardLeft: {
     flexDirection: "row",
@@ -208,7 +177,7 @@ const styles = StyleSheet.create({
     color: "#4CAF50",
   },
   expense: {
-    color: "#C62828", //red
+    color: "#E53935",
   },
 });
 

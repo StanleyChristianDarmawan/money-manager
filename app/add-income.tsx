@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -37,7 +36,6 @@ export default function AddIncome() {
       alert('User not logged in');
     }
   };
-  
 
   return (
     <View style={styles.container}>
