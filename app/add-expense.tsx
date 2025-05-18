@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
@@ -28,7 +28,6 @@ export default function AddExpense() {
 
       const db = getFirestore();
 
-      // Save to user-specific expenses
       const expensesRef = collection(db, 'users', user.uid, 'expenses');
       await addDoc(expensesRef, {
         amount: parsedAmount,
@@ -36,10 +35,9 @@ export default function AddExpense() {
         date
       });
 
-      // Save to global transactions (as negative value)
       const transactionsRef = collection(db, 'transactions');
       await addDoc(transactionsRef, {
-        amount: -parsedAmount, // Make it negative
+        amount: -parsedAmount,
         category,
         date: date.toISOString().split('T')[0],
         day: date.toLocaleDateString('en-US', { weekday: 'long' }),
@@ -57,23 +55,31 @@ export default function AddExpense() {
 
   return (
     <View style={styles.container}>
-      <Text>Amount:</Text>
+      <Text style={styles.header}>Add Expense</Text>
+
+      <Text style={styles.label}>Amount</Text>
       <TextInput
         style={styles.input}
         keyboardType="numeric"
         value={amount}
         onChangeText={setAmount}
+        placeholder="Enter amount"
+        placeholderTextColor="#999"
       />
 
-      <Text>Category:</Text>
+      <Text style={styles.label}>Category</Text>
       <TextInput
         style={styles.input}
         value={category}
         onChangeText={setCategory}
+        placeholder="e.g., Food, Transport"
+        placeholderTextColor="#999"
       />
 
-      <Text>Date:</Text>
-      <Button title={date.toDateString()} onPress={() => setShowDatePicker(true)} />
+      <Text style={styles.label}>Date</Text>
+      <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
+        <Text style={styles.dateButtonText}>{date.toDateString()}</Text>
+      </TouchableOpacity>
 
       {showDatePicker && (
         <DateTimePicker
@@ -89,12 +95,58 @@ export default function AddExpense() {
         />
       )}
 
-      <Button title="Save Expense" onPress={saveExpense} />
+      <TouchableOpacity onPress={saveExpense} style={styles.saveButton}>
+        <Text style={styles.saveButtonText}>Save Expense</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
-  input: { borderWidth: 1, padding: 8, marginVertical: 10 }
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#5B2C82',
+  },
+  header: {
+    fontSize: 22,
+    color: '#fff',
+    fontWeight: 'bold',
+    marginBottom: 20,
+  },
+  label: {
+    color: '#fff',
+    marginBottom: 6,
+    fontWeight: '500',
+  },
+  input: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
+    fontSize: 16,
+  },
+  dateButton: {
+    backgroundColor: '#fff',
+    padding: 12,
+    borderRadius: 12,
+    marginBottom: 20,
+  },
+  dateButtonText: {
+    fontSize: 16,
+    color: '#5B2C82',
+    fontWeight: '500',
+  },
+  saveButton: {
+    backgroundColor: '#fff',
+    padding: 14,
+    borderRadius: 12,
+    alignItems: 'center',
+    elevation: 4,
+  },
+  saveButtonText: {
+    color: '#F44336',
+    fontWeight: '600',
+    fontSize: 16,
+  },
 });

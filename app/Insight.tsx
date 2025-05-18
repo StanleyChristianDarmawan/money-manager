@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView } from "react-native";
-import { PieChart, LineChart, BarChart } from "react-native-chart-kit";
+import { View, Text, StyleSheet, ScrollView, Dimensions } from "react-native";
+import { PieChart, LineChart } from "react-native-chart-kit";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase"; // Make sure this path is correct
-import { Dimensions } from "react-native";
+import { db } from "../firebase";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -17,53 +16,47 @@ const Insight = () => {
     const fetchTransactions = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "transactions"));
-        
+
         const categoryTotals = {};
         let expenseSum = 0;
         let incomeSum = 0;
-        
+
         const today = new Date();
         const currentMonth = today.getMonth() + 1;
         const currentYear = today.getFullYear();
-        
+
         querySnapshot.forEach((doc) => {
           const transaction = { id: doc.id, ...doc.data() };
           const txDate = new Date(transaction.date);
           const txMonth = txDate.getMonth() + 1;
           const txYear = txDate.getFullYear();
-          
+
           if (txMonth === currentMonth && txYear === currentYear) {
             if (transaction.amount < 0) {
               const amount = Math.abs(transaction.amount);
               expenseSum += amount;
               const category = transaction.category;
-              if (categoryTotals[category]) {
-                categoryTotals[category] += amount;
-              } else {
-                categoryTotals[category] = amount;
-              }
+              categoryTotals[category] = (categoryTotals[category] || 0) + amount;
             } else {
               incomeSum += transaction.amount;
             }
           }
         });
-        
+
         setTotalExpense(expenseSum);
         setTotalIncome(incomeSum);
-        
-        const data = Object.keys(categoryTotals).map((category, index) => {
-          const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
-          return {
-            name: category,
-            amount: categoryTotals[category],
-            color: colors[index % colors.length],
-            legendFontColor: "#FFFFFF",
-            legendFontSize: 14,
-          };
-        });
-        
+
+        const colors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF", "#FF9F40"];
+        const data = Object.entries(categoryTotals).map(([category, amount], index) => ({
+          name: category,
+          amount,
+          color: colors[index % colors.length],
+          legendFontColor: "#333",
+          legendFontSize: 14,
+        }));
+
         setCategoryData(data);
-        
+
         if (data.length > 0) {
           const max = data.reduce((prev, current) => (prev.amount > current.amount ? prev : current));
           setHighestCategory(max);
@@ -72,53 +65,45 @@ const Insight = () => {
         console.error("Error fetching transactions:", error);
       }
     };
-    
+
     fetchTransactions();
   }, []);
-  
+
   const lineChartData = {
     labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
     datasets: [
       {
         data: [500, 300, 600, 700, 900, 1200, 1500],
-        color: (opacity = 1) => `rgba(255, 99, 132, ${opacity})`,
+        color: (opacity = 1) => `rgba(108, 62, 183, ${opacity})`,
         strokeWidth: 2,
-      },
-    ],
-  };
-
-  const barChartData = {
-    labels: ["Food", "Transport", "Entertainment", "Bills", "Others"],
-    datasets: [
-      {
-        data: [450, 300, 120, 220, 180],
       },
     ],
   };
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 30 }}>
-      <Text style={styles.title}>Spending Insights</Text>
-      
-      <View style={styles.summaryCards}>
+      <Text style={styles.header}>Insights 📊</Text>
+
+      <View style={styles.cardRow}>
         <View style={styles.card}>
-          <Text style={styles.cardLabel}>Income</Text>
-          <Text style={styles.incomeValue}>Rp{totalIncome.toLocaleString("id-ID")}</Text>
+          <Text style={styles.label}>Total Income</Text>
+          <Text style={styles.income}>Rp{totalIncome.toLocaleString("id-ID")}</Text>
         </View>
-        
         <View style={styles.card}>
-          <Text style={styles.cardLabel}>Expenses</Text>
-          <Text style={styles.expenseValue}>Rp{totalExpense.toLocaleString("id-ID")}</Text>
+          <Text style={styles.label}>Total Expenses</Text>
+          <Text style={styles.expense}>Rp{totalExpense.toLocaleString("id-ID")}</Text>
         </View>
       </View>
-      
+
       {highestCategory && (
         <Text style={styles.summary}>
-          Your highest spending category this month is <Text style={styles.highlight}>{highestCategory.name}</Text> with Rp{highestCategory.amount.toLocaleString("id-ID")}.
+          Your highest spending category this month is{" "}
+          <Text style={styles.highlight}>{highestCategory.name}</Text> with Rp
+          {highestCategory.amount.toLocaleString("id-ID")}.
         </Text>
       )}
-      
-      <View style={styles.chartContainer}>
+
+      <View style={styles.chartCard}>
         <Text style={styles.chartTitle}>Expense Breakdown</Text>
         <PieChart
           data={categoryData}
@@ -128,33 +113,33 @@ const Insight = () => {
           backgroundColor="transparent"
           paddingLeft="15"
           chartConfig={{
-            color: () => `white`,
-            labelColor: () => `white`,
+            color: () => `black`,
+            labelColor: () => `black`,
           }}
           style={{ alignSelf: "center" }}
         />
       </View>
 
-      <View style={styles.chartContainer}>
+      <View style={styles.chartCard}>
         <Text style={styles.chartTitle}>Weekly Spending</Text>
         <LineChart
           data={lineChartData}
           width={screenWidth - 32}
           height={220}
           chartConfig={{
-            backgroundColor: "#1E2923",
-            backgroundGradientFrom: "#08130D",
-            backgroundGradientTo: "#1E2923",
-            decimalPlaces: 2,
-            color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-            labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+            backgroundColor: "#ffffff",
+            backgroundGradientFrom: "#ffffff",
+            backgroundGradientTo: "#ffffff",
+            decimalPlaces: 0,
+            color: (opacity = 1) => `rgba(108, 62, 183, ${opacity})`,
+            labelColor: () => `#333`,
             style: {
               borderRadius: 16,
             },
             propsForDots: {
               r: "6",
               strokeWidth: "2",
-              stroke: "#ffa726",
+              stroke: "#6C3EB7",
             },
           }}
           bezier
@@ -171,65 +156,61 @@ const styles = StyleSheet.create({
     paddingTop: 40,
     paddingHorizontal: 16,
   },
-  title: {
-    fontSize: 24,
+  header: {
+    fontSize: 22,
     fontWeight: "bold",
     color: "#FFFFFF",
     marginBottom: 20,
   },
-  summaryCards: {
+  cardRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 24,
+    marginBottom: 20,
   },
   card: {
-    backgroundColor: "rgba(255, 255, 255, 0.1)",
-    borderRadius: 16,
-    padding: 16, 
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 16,
     width: "48%",
+    elevation: 4,
   },
-  cardLabel: {
-    color: "#E0E0E0",
+  label: {
     fontSize: 14,
-    marginBottom: 8,
+    color: "#888888",
+    marginBottom: 4,
   },
-  incomeValue: {
+  income: {
+    fontSize: 18,
+    fontWeight: "bold",
     color: "#4CAF50",
-    fontSize: 18,
-    fontWeight: "bold",
   },
-  expenseValue: {
-    color: "#FF6384",
+  expense: {
     fontSize: 18,
     fontWeight: "bold",
+    color: "#F44336",
   },
   summary: {
     fontSize: 16,
-    color: "#E0E0E0",
+    color: "#FFFFFF",
     marginBottom: 20,
   },
   highlight: {
-    color: "#FF9F40",
     fontWeight: "bold",
+    color: "#FFCE56",
   },
-  chartContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.07)",
+  chartCard: {
+    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 16,
-    marginTop: 10,
+    marginBottom: 20,
+    elevation: 4,
   },
   chartTitle: {
-    color: "#FFFFFF",
     fontSize: 18,
     fontWeight: "600",
     marginBottom: 10,
+    color: "#6C3EB7",
     textAlign: "center",
-  },
-  noData: {
-    color: "#CCCCCC",
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 40,
   },
 });
 
