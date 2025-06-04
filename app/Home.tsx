@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import BudgetSummary from "./BudgetSummary";
 import TransactionTimeline from "./Timeline";
+import BudgetGeneratorScreen from './GeneratedBudget';
 
 const HomeScreen = () => {
   const router = useRouter();
@@ -41,6 +42,14 @@ const HomeScreen = () => {
         <View style={styles.buttonContent}>
           <Ionicons name="wallet-outline" size={20} color="#F44336" style={{ marginRight: 10 }} />
           <Text style={styles.buttonText}>Add Expense</Text>
+        </View>
+      </TouchableOpacity>
+
+      {/* Button to go to AI Page */}
+      <TouchableOpacity style={styles.addButton} onPress={() => router.push("/GeneratedBudget")}>
+        <View style={styles.buttonContent}>
+          <Ionicons name="wallet-outline" size={20} color="#F44336" style={{ marginRight: 10 }} />
+          <Text style={styles.buttonText}>AI Helper</Text>
         </View>
       </TouchableOpacity>
     </ScrollView>

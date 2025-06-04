@@ -1,13 +1,8 @@
-//ignore the red text since most of them are relevant for this code to work
-
-
-
-
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../firebase"; // Make sure this path is correct
+import { db } from "../firebase";
 
 const BudgetSummary = () => {
   const [income, setIncome] = useState(0);
@@ -26,7 +21,7 @@ const BudgetSummary = () => {
         
         // Get current month for filtering
         const today = new Date();
-        const currentMonth = today.getMonth() + 1; // JavaScript months are 0-indexed
+        const currentMonth = today.getMonth() + 1;
         const currentYear = today.getFullYear();
         
         querySnapshot.forEach((doc) => {
@@ -132,12 +127,12 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   expense: {
-    color: "#FFA726", // warmer orange
+    color: "#FFA726",
     fontSize: 20,
     fontWeight: "bold",
   },
   income: {
-    color: "#B2FF59", // bright green
+    color: "#B2FF59",
     fontSize: 20,
     fontWeight: "bold",
   },
@@ -160,7 +155,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   negativeAmount: {
-    color: "#FF5252", // red for negative amount
+    color: "#FF5252",
   },
   totalBudget: {
     color: "#FFFFFF",
@@ -171,7 +166,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
     height: 10,
     borderRadius: 5,
-    backgroundColor: "#D1C4E9", // lighter background to contrast orange bar
+    backgroundColor: "#D1C4E9",
   },
   overBudget: {
     color: "#FF5252",
