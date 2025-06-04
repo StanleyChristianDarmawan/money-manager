@@ -1,3 +1,6 @@
+# Ini jangan diikutin dulu masih belom bener stepnya
+
+
 # Money Manager App
 
 A mobile daily finance tracking application built with **React Native** and **Firebase**, featuring **Google Sign-In** authentication and **Gemini AI** integration for smart financial recommendation.
