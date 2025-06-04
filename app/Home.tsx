@@ -48,7 +48,7 @@ const HomeScreen = () => {
       {/* Button to go to AI Page */}
       <TouchableOpacity style={styles.addButton} onPress={() => router.push("/GeneratedBudget")}>
         <View style={styles.buttonContent}>
-          <Ionicons name="wallet-outline" size={20} color="#F44336" style={{ marginRight: 10 }} />
+          <Ionicons name="sparkles-outline" size={20} color="#dede04" style={{ marginRight: 10 }} />
           <Text style={styles.buttonText}>AI Helper</Text>
         </View>
       </TouchableOpacity>
