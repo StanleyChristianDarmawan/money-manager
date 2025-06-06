@@ -1,14 +1,4 @@
-const express = require('express');
-const cors = require('cors');
-const dotenv = require('dotenv');
 const { GoogleGenAI } = require('@google/genai');
-
-dotenv.config();
-const app = express();
-const PORT = 3005;
-
-app.use(cors());
-app.use(express.json());
 
 const ai = new GoogleGenAI({ apiKey: process.env.GOOGLE_API_KEY });
 
