@@ -32,28 +32,6 @@ A mobile daily finance tracking application built with **React Native** and **Fi
 
 ---
 
-## Test Login
-
-To allow instructors or testers to log in without being added manually to Google Auth platform:
-
-* **Email:** `test@gmail.com`
-* **Password:** `12345678`
-
-> ⚠️ This is for demo/testing only. Do not share Email and Password to others.
-
----
-
-## Gemini API Key
-
-```ts
-// Example usage (e.g. in prompt.ts):
-const GEMINI_API_KEY = "123456";
-```
-
-> ⚠️ This is for demo/testing only. Do not share API keys to others.
-
----
-
 ## Getting Started Locally
 
 ### 1. Clone the Repository
@@ -68,25 +46,37 @@ cd money-manager
 ```bash
 npm install
 ```
+### 3. Create .env
 
-### 3. Configure Firebase
-
-* Create a new project at [Firebase Console](https://console.firebase.google.com)
-* Enable **Google Sign-In** under Authentication > Sign-in method
-* Enable **Realtime Database** in test mode
-* Add your Firebase config to a file like `firebaseConfig.ts`:
-
-```ts
-export const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  databaseURL: "https://YOUR_PROJECT_ID.firebaseio.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID",
-};
+```bash
+cp env.example .env
 ```
+
+### 4. Insert your Gemini API and Firebase Configuration to .env file
+```bash
+GOOGLE_API_KEY=
+
+FIREBASE_API_KEY=
+FIREBASE_AUTH_DOMAIN=
+FIREBASE_PROJECT_ID=
+FIREBASE_STORAGE_BUCKET=
+FIREBASE_MESSAGING_SENDER_ID=
+FIREBASE_APP_ID=
+FIREBASE_MEASUREMENT_ID=
+```
+
+For test only, you can use my firebase api key but please don't share it to public (Will delete it soon)
+```bash
+FIREBASE_API_KEY=AIzaSyDNMfQPpLUubo0vLRV0jZNLA3upmxgWBXw
+FIREBASE_AUTH_DOMAIN=money-manager-727dc.firebaseapp.com
+FIREBASE_PROJECT_ID=money-manager-727dc
+FIREBASE_STORAGE_BUCKET=money-manager-727dc.firebasestorage.app
+FIREBASE_MESSAGING_SENDER_ID=414370947871
+FIREBASE_APP_ID=1:414370947871:web:aa1ed00571d0772ea2862a
+FIREBASE_MEASUREMENT_ID=G-QZ8TWE1RBX
+```
+
+> ⚠️ This is for demo/testing only. Do not share API keys to others.
 
 ### 4. Run the App
 
