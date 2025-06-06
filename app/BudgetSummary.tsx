@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { ProgressBar } from "react-native-paper";
 import { collection, getDocs } from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { db } from "../firebase";
 
 const BudgetSummary = () => {
@@ -10,50 +11,54 @@ const BudgetSummary = () => {
   const [budget, setBudget] = useState(2000000);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchTransactions = async () => {
+ useEffect(() => {
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        console.log("No user logged in");
+        setLoading(false);
+        return;
+      }
+
       try {
-        // Get all transactions from the same collection as TransactionTimeline
         const querySnapshot = await getDocs(collection(db, "transactions"));
-        
+
         let totalIncome = 0;
         let totalExpense = 0;
-        
-        // Get current month for filtering
+
         const today = new Date();
         const currentMonth = today.getMonth() + 1;
         const currentYear = today.getFullYear();
-        
+
         querySnapshot.forEach((doc) => {
           const transaction = { id: doc.id, ...doc.data() };
-          
-          // Parse date to check if it's in the current month
-          const txDate = new Date(transaction.date);
-          const txMonth = txDate.getMonth() + 1;
-          const txYear = txDate.getFullYear();
-          
-          // Only process transactions from the current month
-          if (txMonth === currentMonth && txYear === currentYear) {
-            if (transaction.amount < 0) {
-              // It's an expense - store as positive for display
-              totalExpense += Math.abs(transaction.amount);
-            } else {
-              // It's income
-              totalIncome += transaction.amount;
+
+          if (transaction.userId_creator === user.uid) {
+            const txDate = new Date(transaction.date);
+            const txMonth = txDate.getMonth() + 1;
+            const txYear = txDate.getFullYear();
+
+            if (txMonth === currentMonth && txYear === currentYear) {
+              if (transaction.amount < 0) {
+                totalExpense += Math.abs(transaction.amount);
+              } else {
+                totalIncome += transaction.amount;
+              }
             }
           }
         });
-        
+
         setIncome(totalIncome);
         setExpense(totalExpense);
-        setLoading(false);
       } catch (error) {
         console.error("Error fetching transactions:", error);
+      } finally {
         setLoading(false);
       }
-    };
-    
-    fetchTransactions();
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const leftToSpend = budget - expense;
