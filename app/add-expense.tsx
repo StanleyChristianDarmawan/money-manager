@@ -37,7 +37,7 @@ export default function AddExpense() {
 
         const transactionsRef = collection(db, 'transactions');
         await addDoc(transactionsRef, {
-          amount: parseFloat(amount),
+          amount:-parseFloat(amount),
           category,
           date: date.toISOString().split('T')[0],
           day: date.toLocaleDateString('en-US', { weekday: 'long' }),
