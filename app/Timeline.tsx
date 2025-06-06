@@ -3,6 +3,7 @@ import { View, Text, FlatList, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const categoryIcons: { [key: string]: string } = {
   Salary: "cash-outline",
@@ -15,23 +16,32 @@ const TransactionTimeline = () => {
   const [transactions, setTransactions] = useState<any[]>([]);
 
   useEffect(() => {
-    const fetchTransactions = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "transactions"));
-        const data: any[] = [];
+    const auth = getAuth();
 
-        querySnapshot.forEach((doc) => {
-          data.push({ id: doc.id, ...doc.data() });
-        });
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        try {
+          const querySnapshot = await getDocs(collection(db, "transactions"));
+          const allData: any[] = [];
 
-        const groupedData = groupTransactionsByDate(data);
-        setTransactions(groupedData);
-      } catch (error) {
-        console.error("Error fetching transactions:", error);
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            if (data.userId_creator === user.uid) {
+              allData.push({ id: doc.id, ...data });
+            }
+          });
+
+          const groupedData = groupTransactionsByDate(allData);
+          setTransactions(groupedData);
+        } catch (error) {
+          console.error("Error fetching transactions:", error);
+        }
+      } else {
+        console.log("No user signed in.");
       }
-    };
+    });
 
-    fetchTransactions();
+    return () => unsubscribe();
   }, []);
 
   const groupTransactionsByDate = (transactions: any[]) => {

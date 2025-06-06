@@ -42,7 +42,8 @@ export default function AddIncome() {
           date: date.toISOString().split('T')[0],
           day: date.toLocaleDateString('en-US', { weekday: 'long' }),
           type: 'income',
-          backgroundColor: '#DFFFD6'
+          backgroundColor: '#DFFFD6',
+          userId_creator: user.uid
         });
 
         setAmount('');

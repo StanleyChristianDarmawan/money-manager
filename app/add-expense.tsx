@@ -42,7 +42,8 @@ export default function AddExpense() {
           date: date.toISOString().split('T')[0],
           day: date.toLocaleDateString('en-US', { weekday: 'long' }),
           type: 'expense',
-          backgroundColor: '#FDEAEA'
+          backgroundColor: '#FDEAEA',
+          userId_creator: user.uid
         });
 
         setAmount('');
