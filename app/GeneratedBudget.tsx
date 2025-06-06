@@ -21,7 +21,7 @@ export default function GenerateBudgetPage() {
     setLoading(true);
     setResult(null);
     try {
-      const response = await fetch('https://money-manager-api-two.vercel.app/api/api', {
+      const response = await fetch('https://money-manager-api-two.vercel.app/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userInput }),
