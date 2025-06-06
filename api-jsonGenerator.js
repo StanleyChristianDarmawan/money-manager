@@ -59,6 +59,8 @@ app.post('/generate-budget', async (req, res) => {
 
     const jsonParsed = JSON.parse(cleaned);
 
+    console.log(JSON.stringify(jsonParsed, null, 2));
+
     res.json(jsonParsed);
   } catch (err) {
     console.error("Failed to generate budget:", err);
