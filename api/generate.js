@@ -42,7 +42,11 @@ ${userInput}
 """
 `;
 
-app.post('/generate-budget', async (req, res) => {
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
+  }
+
   const { userInput } = req.body;
 
   try {
@@ -52,11 +56,9 @@ app.post('/generate-budget', async (req, res) => {
     });
 
     const rawText = result.text;
-
     if (!rawText) throw new Error("AI response is empty or malformed");
 
     const cleaned = rawText.replace(/```json|```/g, "").trim();
-
     const jsonParsed = JSON.parse(cleaned);
 
     res.json(jsonParsed);
@@ -64,8 +66,4 @@ app.post('/generate-budget', async (req, res) => {
     console.error("Failed to generate budget:", err);
     res.status(500).json({ error: "Failed to generate budget" });
   }
-});
-
-app.listen(PORT, () => {
-  console.log(`API running on http://localhost:${PORT}`);
-});
+}
