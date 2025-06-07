@@ -62,7 +62,7 @@ FIREBASE_APP_ID=
 FIREBASE_MEASUREMENT_ID=
 ```
 
-For test purpose, you can use my firebase and gemini api key but please don't share it to public (Will delete it soon)
+For test purpose, you can use my temporary firebase and gemini api key but please don't share it to public (Will delete it soon)
 ```bash
 GOOGLE_API_KEY=AIzaSyDe6C5xdVOo_WAITUSU2gipyh-xjcvE6ZU
 
@@ -76,6 +76,7 @@ FIREBASE_MEASUREMENT_ID=G-QZ8TWE1RBX
 
 ```
 
+> ⚠️ For internal testing, we used temporary API keys. 
 > ⚠️ This is for demo/testing only. Do not share API keys to others.
 
 ### 4. Run the App
