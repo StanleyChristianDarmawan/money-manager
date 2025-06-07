@@ -76,7 +76,7 @@ FIREBASE_MEASUREMENT_ID=G-QZ8TWE1RBX
 
 ```
 
-> ⚠️ For internal testing, we used temporary API keys. <br />
+> ⚠️ For demo/testing purpose, we used temporary API keys. <br />
 > ⚠️ This is for demo/testing only. Do not share API keys to others.
 
 ### 4. Run the App
