@@ -65,8 +65,10 @@ FIREBASE_APP_ID=
 FIREBASE_MEASUREMENT_ID=
 ```
 
-For test only, you can use my firebase api key but please don't share it to public (Will delete it soon)
+For test purpose, you can use my firebase and gemini api key but please don't share it to public (Will delete it soon)
 ```bash
+GOOGLE_API_KEY=AIzaSyDe6C5xdVOo_WAITUSU2gipyh-xjcvE6ZU
+
 FIREBASE_API_KEY=AIzaSyDNMfQPpLUubo0vLRV0jZNLA3upmxgWBXw
 FIREBASE_AUTH_DOMAIN=money-manager-727dc.firebaseapp.com
 FIREBASE_PROJECT_ID=money-manager-727dc
@@ -74,6 +76,7 @@ FIREBASE_STORAGE_BUCKET=money-manager-727dc.firebasestorage.app
 FIREBASE_MESSAGING_SENDER_ID=414370947871
 FIREBASE_APP_ID=1:414370947871:web:aa1ed00571d0772ea2862a
 FIREBASE_MEASUREMENT_ID=G-QZ8TWE1RBX
+
 ```
 
 > ⚠️ This is for demo/testing only. Do not share API keys to others.
