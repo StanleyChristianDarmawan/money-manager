@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Dimensions, ActivityIndicator } from "react-native";
 import { PieChart, LineChart } from "react-native-chart-kit";
-// import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const screenWidth = Dimensions.get("window").width;
 
@@ -14,9 +14,18 @@ const Insight = () => {
   const [totalExpense, setTotalExpense] = useState(0);
   const [totalIncome, setTotalIncome] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [lineChartData, setLineChartData] = useState(null);
 
   useEffect(() => {
-    const fetchTransactions = async () => {
+    const auth = getAuth();
+
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        console.log("No user logged in.");
+        setLoading(false);
+        return;
+      }
+
       setLoading(true);
       try {
         const querySnapshot = await getDocs(collection(db, "transactions"));
@@ -29,20 +38,32 @@ const Insight = () => {
         const currentMonth = today.getMonth() + 1;
         const currentYear = today.getFullYear();
 
+        const weeklyData = Array(7).fill(0);
+        const now = new Date();
+
         querySnapshot.forEach((doc) => {
           const transaction = { id: doc.id, ...doc.data() };
-          const txDate = new Date(transaction.date);
-          const txMonth = txDate.getMonth() + 1;
-          const txYear = txDate.getFullYear();
 
-          if (txMonth === currentMonth && txYear === currentYear) {
-            if (transaction.amount < 0) {
-              const amount = Math.abs(transaction.amount);
-              expenseSum += amount;
-              const category = transaction.category;
-              categoryTotals[category] = (categoryTotals[category] || 0) + amount;
-            } else {
-              incomeSum += transaction.amount;
+          if (transaction.userId_creator === user.uid) {
+            const txDate = new Date(transaction.date);
+            const txMonth = txDate.getMonth() + 1;
+            const txYear = txDate.getFullYear();
+
+            if (txMonth === currentMonth && txYear === currentYear) {
+              if (transaction.amount < 0) {
+                const amount = Math.abs(transaction.amount);
+                expenseSum += amount;
+                const category = transaction.category;
+                categoryTotals[category] = (categoryTotals[category] || 0) + amount;
+              } else {
+                incomeSum += transaction.amount;
+              }
+            }
+
+            const dayDiff = Math.floor((now.getTime() - txDate.getTime()) / (1000 * 60 * 60 * 24));
+            if (dayDiff < 7 && dayDiff >= 0 && transaction.amount < 0) {
+              const dayOfWeek = txDate.getDay();
+              weeklyData[dayOfWeek] += Math.abs(transaction.amount);
             }
           }
         });
@@ -60,31 +81,32 @@ const Insight = () => {
         }));
 
         setCategoryData(data);
-
         if (data.length > 0) {
           const max = data.reduce((prev, current) => (prev.amount > current.amount ? prev : current));
           setHighestCategory(max);
         }
+
+        const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+        const lineData = {
+          labels: dayLabels,
+          datasets: [
+            {
+              data: weeklyData,
+              color: (opacity = 1) => `rgba(138, 82, 229, ${opacity})`,
+              strokeWidth: 3,
+            },
+          ],
+        };
+        setLineChartData(lineData);
       } catch (error) {
         console.error("Error fetching transactions:", error);
       } finally {
         setLoading(false);
       }
-    };
+    });
 
-    fetchTransactions();
+    return () => unsubscribe();
   }, []);
-
-  const lineChartData = {
-    labels: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-    datasets: [
-      {
-        data: [500, 300, 600, 700, 900, 1200, 1500],
-        color: (opacity = 1) => `rgba(138, 82, 229, ${opacity})`,
-        strokeWidth: 3,
-      },
-    ],
-  };
 
   const chartConfig = {
     backgroundColor: "transparent",
