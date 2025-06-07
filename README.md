@@ -46,7 +46,7 @@ npm install
 ### 3. Create .env
 
 ```bash
-cp env.example .env
+copy env.example .env
 ```
 
 ### 4. Insert your Gemini API and Firebase Configuration to .env file
