@@ -84,3 +84,9 @@ FIREBASE_MEASUREMENT_ID=G-QZ8TWE1RBX
 ```bash
 npx expo start
 ```
+
+### 5. Run the API
+
+```
+node api-jsonGenerator.js
+```
